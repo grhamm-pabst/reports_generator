@@ -3,9 +3,9 @@ defmodule ReportsGeneratorTest do
 
   describe "build/1" do
     test "builds the report" do
-      file_name = "report_test.csv"
+      filename = "report_test.csv"
 
-      response = ReportsGenerator.build(file_name)
+      response = ReportsGenerator.build(filename)
 
       expected_response = %{
         "foods" => %{
@@ -13,7 +13,10 @@ defmodule ReportsGeneratorTest do
           "churrasco" => 2,
           "esfirra" => 3,
           "hambúrguer" => 2,
-          "pizza" => 2
+          "pizza" => 2,
+          "pastel" => 0,
+          "prato_feito" => 0,
+          "sushi" => 0
         },
         "users" => %{
           "1" => 48,
@@ -25,9 +28,93 @@ defmodule ReportsGeneratorTest do
           "6" => 18,
           "7" => 27,
           "8" => 25,
-          "9" => 24
+          "9" => 24,
+          "11" => 0,
+          "12" => 0,
+          "13" => 0,
+          "14" => 0,
+          "15" => 0,
+          "16" => 0,
+          "17" => 0,
+          "18" => 0,
+          "19" => 0,
+          "20" => 0,
+          "21" => 0,
+          "22" => 0,
+          "23" => 0,
+          "24" => 0,
+          "25" => 0,
+          "26" => 0,
+          "27" => 0,
+          "28" => 0,
+          "29" => 0,
+          "30" => 0
         }
       }
+
+      assert response == expected_response
+    end
+  end
+
+  describe "build_from_many/1" do
+    test "when a file list is providaded, builds the report" do
+      filenames = ["report_test.csv", "report_test.csv"]
+
+      response = ReportsGenerator.build_from_many(filenames)
+
+      expected_response =
+        {:ok,
+         %{
+           "foods" => %{
+             "açaí" => 2,
+             "churrasco" => 4,
+             "esfirra" => 6,
+             "hambúrguer" => 4,
+             "pastel" => 0,
+             "pizza" => 4,
+             "prato_feito" => 0,
+             "sushi" => 0
+           },
+           "users" => %{
+             "1" => 96,
+             "10" => 72,
+             "11" => 0,
+             "12" => 0,
+             "13" => 0,
+             "14" => 0,
+             "15" => 0,
+             "16" => 0,
+             "17" => 0,
+             "18" => 0,
+             "19" => 0,
+             "2" => 90,
+             "20" => 0,
+             "21" => 0,
+             "22" => 0,
+             "23" => 0,
+             "24" => 0,
+             "25" => 0,
+             "26" => 0,
+             "27" => 0,
+             "28" => 0,
+             "29" => 0,
+             "3" => 62,
+             "30" => 0,
+             "4" => 84,
+             "5" => 98,
+             "6" => 36,
+             "7" => 54,
+             "8" => 50,
+             "9" => 48
+           }
+         }}
+
+      assert response == expected_response
+    end
+
+    test "when a file list is not provided, returns an error" do
+      response = ReportsGenerator.build_from_many("banana")
+      expected_response = {:error, "Please provide a list of reports"}
 
       assert response == expected_response
     end
