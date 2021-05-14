@@ -68,17 +68,26 @@ defmodule ReportsGenerator do
 
   defp build_report(foods, users), do: %{"foods" => foods, "users" => users}
 
-  # defp get_max_user_id(filename) do
-  #   filename
-  #   |> Parser.parse_files()
-  #   |> Enum.map(fn [id, _food_name, _price] -> String.to_integer(id) end)
-  #   |> Enum.max()
-  # end
+  def get_unique_food_and_max_id(filename) do
+    filename
+    |> Parser.parse_files()
+    |> Stream.map(fn [id, food, price] -> [String.to_integer(id), food, price] end)
+    |> Enum.reduce(%{max_id: 0, unique_foods: []}, fn line, acc -> update_acc(line, acc) end)
+  end
 
-  # defp get_food_names(filename) do
-  #   filename
-  #   |> Parser.parse_files()
-  #   |> Enum.map(fn [_id, food_name, _price] -> food_name end)
-  #   |> Enum.uniq()
-  # end
+  defp update_acc([id, food, _price], acc) do
+    acc =
+      case acc[:max_id] < id do
+        true -> Map.put(acc, :max_id, id)
+        false -> acc
+      end
+
+    acc =
+      case !Enum.member?(acc[:unique_foods], food) do
+        true -> Map.put(acc, :unique_foods, acc[:unique_foods] ++ [food])
+        false -> acc
+      end
+
+    acc
+  end
 end
